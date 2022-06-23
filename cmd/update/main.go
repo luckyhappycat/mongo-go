@@ -25,24 +25,18 @@ func main() {
 	}()
 
 	// database and colletion code goes here
-	db := client.Database("wechat")
-	coll := db.Collection("access_token")
+	db := client.Database("sample_guides")
+	coll := db.Collection("comets")
 
-	// find code goes here
-	cursor, err := coll.Find(context.TODO(), bson.D{})
+	// update code goes here
+	filter := bson.D{{}}
+	update := bson.D{{"$mul", bson.D{{"Radius", 1.60934}}}}
+
+	result, err := coll.UpdateMany(context.TODO(), filter, update)
 	if err != nil {
 		panic(err)
 	}
 
-	// iterate code goes here
-	for cursor.Next(context.TODO()) {
-		var result bson.M
-		if err := cursor.Decode(&result); err != nil {
-			panic(err)
-		}
-		fmt.Println(result)
-	}
-	if err := cursor.Err(); err != nil {
-		panic(err)
-	}
+	// display the results of your operation
+	fmt.Printf("Number of documents updated: %d", result.ModifiedCount)
 }

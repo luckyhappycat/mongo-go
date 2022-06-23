@@ -25,24 +25,24 @@ func main() {
 	}()
 
 	// database and colletion code goes here
-	db := client.Database("wechat")
-	coll := db.Collection("access_token")
+	db := client.Database("sample_guides")
+	coll := db.Collection("comets")
 
-	// find code goes here
-	cursor, err := coll.Find(context.TODO(), bson.D{})
+	// delete code goes here
+	filter := bson.D{
+		{"$and",
+			bson.A{
+				bson.D{{"OrbitalPeriod", bson.D{{"$gt", 5}}}},
+				bson.D{{"OrbitalPeriod", bson.D{{"$lt", 85}}}},
+			},
+		},
+	}
+
+	result, err := coll.DeleteMany(context.TODO(), filter)
 	if err != nil {
 		panic(err)
 	}
 
-	// iterate code goes here
-	for cursor.Next(context.TODO()) {
-		var result bson.M
-		if err := cursor.Decode(&result); err != nil {
-			panic(err)
-		}
-		fmt.Println(result)
-	}
-	if err := cursor.Err(); err != nil {
-		panic(err)
-	}
+	// amount deleted code goes here
+	fmt.Printf("Number of documents deleted: %d", result.DeletedCount)
 }
